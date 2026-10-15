@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>우리 결혼합니다 - 모바일 청첩장</title>
+  <!-- 무료 저작권 웹폰트: 고운바탕(제목/감성문구) & 프리텐다드(본문) -->
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  
+  <style>
+    :root {
+      --bg-color: #fdfbf7;
+      --point-color: #8c7355;
+      --text-main: #333333;
+      --text-sub: #666666;
+      --border-color: #e8e2d9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #ebe6df;
+      font-family: 'Pretendard', sans-serif;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+    }
+
+    /* 모바일 컨테이너 (미리캔버스 스타일 캔버스) */
+    .invitation-wrap {
+      width: 100%;
+      max-width: 430px;
+      background-color: var(--bg-color);
+      box-shadow: 0 0 25px rgba(0,0,0,0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .serif {
+      font-family: 'Gowun Batang', serif;
+    }
+
+    section {
+      padding: 55px 25px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    /* 애니메이션 효과 */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeUp 1.2s ease-out forwards;
+    }
+
+    /* 1. 표지 섹션 */
+    .cover-section {
+      padding-top: 45px;
+    }
+    .cover-subtitle {
+      font-size: 14px;
+      letter-spacing: 4px;
+      color: var(--point-color);
+      margin-bottom: 12px;
+    }
+    .cover-title {
+      font-size: 26px;
+      margin-bottom: 30px;
+      line-height: 1.4;
+    }
+    .main-photo-frame {
+      width: 100%;
+      height: 440px;
+      border-radius: 180px 180px 12px 12px; /* 아치형 프레임 */
+      overflow: hidden;
+      margin-bottom: 25px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+    .main-photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .cover-info {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-sub);
+    }
+
+    /* 2. 초대의 글 & 혼주/신랑신부 소개 */
+    .mini-illust {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: #f3efe6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mini-illust img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .greeting-text {
+      font-size: 15px;
+      line-height: 2;
+      color: var(--text-sub);
+      margin-bottom: 35px;
+    }
+    .parents-box {
+      background-color: #f7f3eb;
+      padding: 22px;
+      border-radius: 12px;
+      font-size: 16px;
+      line-height: 2.2;
+    }
+    .parents-box .relation {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin: 0 6px;
+    }
+
+    /* 3. 갤러리 섹션 (9장 이상) */
+    .section-title {
+      font-size: 18px;
+      color: var(--point-color);
+      letter-spacing: 2px;
+      margin-bottom: 25px;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .gallery-item {
+      aspect-ratio: 1 / 1;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: #eee;
+      cursor: pointer;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    /* 4. 오시는 길 (식장 주소) */
+    .location-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .location-address {
+      font-size: 15px;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+    }
+    .map-placeholder {
+      width: 100%;
+      height: 220px;
+      background-color: #e9e5dc;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-sub);
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    .btn-map {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--point-color);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    /* 5. 마음 전하실 곳 (계좌번호) */
+    .account-group {
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .account-toggle {
+      width: 100%;
+      padding: 15px 18px;
+      background-color: #f3efe6;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .account-list {
+      display: none;
+      background-color: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 0 0 8px 8px;
+      padding: 15px;
+      margin-top: -4px;
+    }
+    .account-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border-color);
+      font-size: 14px;
+    }
+    .account-item:last-child {
+      border-bottom: none;
+    }
+    .btn-copy {
+      padding: 6px 12px;
+      background-color: var(--bg-color);
+      border: 1px solid var(--point-color);
+      color: var(--point-color);
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* 6. 마무리 인사 */
+    .footer-section {
+      padding: 60px 25px;
+      background-color: #f7f3eb;
+      border-bottom: none;
+    }
+    .btn-rsvp-open {
+      margin-top: 25px;
+      padding: 14px 28px;
+      background-color: var(--point-color);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(140, 115, 85, 0.3);
+    }
+
+    /* 참석 여부 팝업 (모달) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-content {
+      background: var(--bg-color);
+      width: 100%;
+      max-width: 360px;
+      border-radius: 16px;
+      padding: 30px 22px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .modal-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .modal-desc {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .form-group {
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 5px;
+      color: var(--text-sub);
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .modal-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .modal-btns button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-submit {
+      background-color: var(--point-color);
+      color: #fff;
+    }
+    .btn-close {
+      background-color: #e0dcd3;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="invitation-wrap">
+    
+    <!-- 1페이지: 표지 및 초대 문구 -->
+    <section class="cover-section fade-in">
+      <p class="cover-subtitle">WEDDING INVITATION</p>
+      <h1 class="cover-title serif">소중한 분들을<br>초대합니다</h1>
+      
+      <!-- 메인 사진 -->
+      <div class="main-photo-frame">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="메인 웨딩 사진">
+      </div>
+
+      <div class="cover-info serif">
+        <strong>김신랑 · 이신부</strong><br>
+        2026년 10월 24일 토요일 오후 2시<br>
+        서울 그랜드 웨딩홀 3층 단독홀
+      </div>
+    </section>
+
+    <!-- 2페이지: 간단한 이미지 & 인사말 & 혼주/신랑신부 이름 -->
+    <section>
+      <!-- 간단한 이미지/아이콘 넣을 공간 -->
+      <div class="mini-illust">
+        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=300&q=80" alt="포인트 이미지">
+      </div>
+
+      <p class="greeting-text serif">
+        서로가 마주보며 다져온 사랑을<br>
+        이제 함께 한곳을 바라보며 걸어갈 수 있는<br>
+        큰 사랑으로 키우고자 합니다.<br>
+        저희 두 사람이 사랑의 이름으로 지켜나갈 수 있게<br>
+        앞날을 축복해 주시면 감사하겠습니다.
+      </p>
+
+      <div class="parents-box serif">
+        <div><strong>김아버지 · 박어머니</strong><span class="relation">의 장남</span><strong>신랑</strong></div>
+        <div><strong>이아버지 · 최어머니</strong><span class="relation">의 장녀</span><strong>신부</strong></div>
+      </div>
+    </section>
+
+    <!-- 3페이지: 사진 갤러리 (9장 이상) -->
+    <section>
+      <h2 class="section-title serif">GALLERY</h2>
+      <div class="gallery-grid">
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=1" alt="웨딩사진1"></div>
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=2" alt="웨딩사진2"></div>
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=3" alt="웨딩사진3"></div>
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=4" alt="웨딩사진4"></div>
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=5" alt="웨딩사진5"></div>
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=6" alt="웨딩사진6"></div>
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=7" alt="웨딩사진7"></div>
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=8" alt="웨딩사진8"></div>
+        <div class="gallery-item"><img src="https://picsum.photos/400/400?random=9" alt="웨딩사진9"></div>
+      </div>
+    </section>
+
+    <!-- 4페이지: 식장 주소 (오시는 길) -->
+    <section>
+      <h2 class="section-title serif">LOCATION</h2>
+      <p class="location-name serif">서울 그랜드 웨딩홀 3층</p>
+      <p class="location-address">서울시 강남구 테헤란로 123 (역삼동 456-7)</p>
+      
+      <div class="map-placeholder">
+        [이곳에 카카오맵/네이버지도 이미지 또는 API 삽입]
+      </div>
+      
+      <a href="https://map.kakao.com" target="_blank" class="btn-map">지도 앱으로 길찾기</a>
+    </section>
+
+    <!-- 5페이지: 계좌번호 안내 -->
+    <section>
+      <h2 class="section-title serif">마음 전하실 곳</h2>
+      <p style="font-size:14px; color:var(--text-sub); margin-bottom:20px;">
+        참석이 어려우신 분들을 위해<br>축하의 마음을 전하실 곳을 안내드립니다.
+      </p>
+
+      <!-- 신랑측 계좌 -->
+      <div class="account-group">
+        <button class="account-toggle" onclick="toggleAccount('groom-acc')">
+          <span>신랑측 계좌번호 보기</span>
+          <span>▼</span>
+        </button>
+        <div id="groom-acc" class="account-list">
+          <div class="account-item">
+            <div><strong>신랑 김신랑</strong><br>카카오뱅크 3333-01-1234567</div>
+            <button class="btn-copy" onclick="copyText('3333-01-1234567')">복사</button>
+          </div>
+          <div class="account-item">
+            <div><strong>혼주 김아버지</strong><br>국민은행 123456-04-123456</div>
+            <button class="btn-copy" onclick="copyText('123456-04-123456')">복사</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 신부측 계좌 -->
+      <div class="account-group">
+        <button class="account-toggle" onclick="toggleAccount('bride-acc')">
+          <span>신부측 계좌번호 보기</span>
+          <span>▼</span>
+        </button>
+        <div id="bride-acc" class="account-list">
+          <div class="account-item">
+            <div><strong>신부 이신부</strong><br>토스뱅크 1000-1234-5678</div>
+            <button class="btn-copy" onclick="copyText('1000-1234-5678')">복사</button>
+          </div>
+          <div class="account-item">
+            <div><strong>혼주 이아버지</strong><br>신한은행 110-123-456789</div>
+            <button class="btn-copy" onclick="copyText('110-123-456789')">복사</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 마지막 페이지: 감사합니다 인사 -->
+    <section class="footer-section">
+      <h2 class="serif" style="font-size: 22px; margin-bottom: 12px;">감사합니다</h2>
+      <p class="serif" style="font-size: 14px; color: var(--text-sub); line-height: 1.8;">
+        언제나 따뜻한 마음으로 지켜봐 주시고<br>
+        귀한 걸음으로 축복해 주시는 모든 분들께<br>
+        진심으로 감사드립니다.
+      </p>
+      <button class="btn-rsvp-open" onclick="openModal()">참석 의사 전달하기</button>
+    </section>
+
+  </div>
+
+  <!-- 참석 가능 여부 팝업 (모달) -->
+  <div id="rsvpModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="modal-title serif">참석 여부 안내</h3>
+      <p class="modal-desc">
+        귀한 걸음 해주시는 분들을 위해<br>
+        정성껏 예식을 준비하고자 합니다.<br>
+        참석 여부를 알려주시면 감사하겠습니다.
+      </p>
+      <div class="form-group">
+        <label>구분</label>
+        <select id="rsvpSide">
+          <option value="신랑측">신랑측 하객</option>
+          <option value="신부측">신부측 하객</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>성함</label>
+        <input type="text" id="rsvpName" placeholder="성함을 입력해 주세요">
+      </div>
+      <div class="form-group">
+        <label>참석 여부 및 식사</label>
+        <select id="rsvpStatus">
+          <option value="참석(식사O)">참석 (식사 예정)</option>
+          <option value="참석(식사X)">참석 (식사 안 함)</option>
+          <option value="불참">마음만 전달 (불참)</option>
+        </select>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-close" onclick="closeModal()">닫기</button>
+        <button class="btn-submit" onclick="submitRsvp()">전달하기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 계좌번호 접기/펼치기
+    function toggleAccount(id) {
+      const el = document.getElementById(id);
+      el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    // 계좌번호 복사
+    function copyText(accountNumber) {
+      navigator.clipboard.writeText(accountNumber).then(() => {
+        alert('계좌번호(' + accountNumber + ')가 복사되었습니다.');
+      });
+    }
+
+    // 팝업 제어
+    function closeModal() {
+      document.getElementById('rsvpModal').style.display = 'none';
+    }
+    function openModal() {
+      document.getElementById('rsvpModal').style.display = 'flex';
+    }
+
+    // 참석 여부 제출 (구글 설문지나 DB 연동 가능)
+    function submitRsvp() {
+      const name = document.getElementById('rsvpName').value;
+      if (!name) {
+        alert('성함을 입력해 주세요.');
+        return;
+      }
+      alert(name + '님, 소중한 참석 의사가 전달되었습니다. 감사합니다!');
+      closeModal();
+    }
+  </script>
+</body>
+</html>
